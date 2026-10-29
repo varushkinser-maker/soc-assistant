@@ -1,0 +1,13 @@
+{
+  "event_name": "yandex.cloud.vpc.v1.SecurityGroupService.Update",
+  "event_time": "2024-01-15T14:40:00Z",
+  "authentication": { "subject_name": "admin@company.ru" },
+  "request_metadata": { "remote_address": "203.0.113.9" },
+  "request": {
+    "rule_spec": {
+      "direction": "INGRESS",
+      "ports": [ { "from_port": "22", "to_port": "22" } ],
+      "cidr_blocks": { "v4_cidr_blocks": ["0.0.0.0/0"] }
+    }
+  }
+}

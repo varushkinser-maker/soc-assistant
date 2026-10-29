@@ -1,0 +1,5 @@
+{
+  "event_name": "yandex.cloud.iam.v1.AccessKeyService.Create",
+  "authentication": { "subject_name": "ghost@company.ru" },
+  "request_metadata": { "remote_address": "192.0.2.44" }
+}

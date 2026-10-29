@@ -1,0 +1,22 @@
+# Секреты и окружение
+.env
+.env.local
+
+# Скомпилированные файлы
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+soc-assistant
+
+# IDE и ОС
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Логи
+*.log
