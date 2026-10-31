@@ -6,7 +6,11 @@ type CallbackResult struct {
 	Text      string
 	NewMarkup *tgbotapi.InlineKeyboardMarkup
 	EditMode  string
-	Err       error
+
+	BroadcastText   string
+	BroadcastMarkup *tgbotapi.InlineKeyboardMarkup
+
+	Err error
 }
 type MessageResult struct {
 	Text string

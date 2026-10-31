@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"fmt"
+	"log"
 	"soc-assistant/internal/models"
 	"soc-assistant/internal/storage"
 	"strings"
@@ -20,7 +21,7 @@ func NewHandlerTGMessage(db *storage.PostgresDB) *HandlerTGMessage {
 	}
 }
 
-func (h *HandlerTGMessage) HandleMessage(adminID int64, text string) *models.MessageResult {
+func (h *HandlerTGMessage) HandleMessage(adminID int64, username string, text string) *models.MessageResult {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	parts := strings.Fields(text)
@@ -45,14 +46,35 @@ func (h *HandlerTGMessage) HandleMessage(adminID int64, text string) *models.Mes
 		}
 	case "/join":
 		if len(parts) != 2 {
-			return &models.MessageResult{Text: "Использование команды: /join <ваш код активации>"}
+			return &models.MessageResult{Err: fmt.Errorf("использование: `/join <КОД>`\nПример: `/join ABC123`")}
 		}
+
 		code := parts[1]
+
+		// 1. Проверяем код
 		err := h.db.ValidateInviteCode(ctx, code)
 		if err != nil {
 			return &models.MessageResult{Err: err}
 		}
-		return &models.MessageResult{Text: "Код приянт, добро пожаловать!"}
+
+		// 2. Добавляем инженера в БД
+		name := username
+		if name == "" {
+			name = fmt.Sprintf("user_%d", adminID) // если username пустой
+		}
+		err = h.db.AddEngineer(ctx, adminID, name)
+		if err != nil {
+			return &models.MessageResult{Err: fmt.Errorf("ошибка регистрации: %v", err)}
+		}
+
+		// 3. Помечаем код как использованный
+		err = h.db.MarkInviteCodeUsed(ctx, code)
+		if err != nil {
+			log.Printf("⚠️ Не удалось пометить код как использованный: %v", err)
+			// Не прерываем — инженер уже добавлен
+		}
+
+		return &models.MessageResult{Text: fmt.Sprintf("✅ Код `%s` принят! Добро пожаловать, %s!", code, name)}
 	default:
 		return &models.MessageResult{Text: "неизвестная команда!\n`Команды:`\n`/join <ваш код активации>`\n`/generate_invite`"}
 	}

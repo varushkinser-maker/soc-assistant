@@ -1,5 +1,4 @@
 services:
-  # 1. База данных PostgreSQL
   db:
     image: postgres:15-alpine
     container_name: soc_postgres
@@ -11,13 +10,13 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d  #  ДОБАВЬ ЭТУ СТРОКУ!
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U soc_user -d soc_db"]
       interval: 5s
       timeout: 5s
       retries: 5
 
-  # 2. Твое Go-приложение
   app:
     build: .
     container_name: soc_app
@@ -29,9 +28,8 @@ services:
       - DB_USER=soc_user
       - DB_PASSWORD=soc_password
       - DB_NAME=soc_db
-      # ⚠️ ВАЖНО: Замени эти значения на свои реальные перед запуском!
-      - TELEGRAM_BOT_TOKEN=8704573548:AAGDcSx6uE0IpRQDia0yEo6LFu5jM8xDSzo
-      - SOC_ENGINEER_CHAT_ID=1852630149
+      - TELEGRAM_BOT_TOKEN=1852630149
+      - SOC_ENGINEER_CHAT_ID=8704573548:AAGDcSx6uE0IpRQDia0yEo6LFu5jM8xDSzo
     depends_on:
       db:
         condition: service_healthy

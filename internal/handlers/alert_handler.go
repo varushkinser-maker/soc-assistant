@@ -72,6 +72,11 @@ func (h *AlertHandler) HandelAlert(w http.ResponseWriter, r *http.Request) {
 	}
 	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 	defer cancel()
+	engineerIDs, err := h.db.GetAllActiveEngineers(ctx)
+	if err != nil {
+		log.Println("ошибка получения списка инженеров:", err)
+		// Можно продолжить без рассылки или вернуть ошибку
+	}
 	id, err := h.db.CreateIncident(ctx, &incedent)
 	if err != nil {
 		log.Println("ошибка добавления инцидента в БД:", err)
@@ -79,7 +84,7 @@ func (h *AlertHandler) HandelAlert(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Println("инцидент добалвен в БД, id: ", id)
-	err = h.bot.SendIncidentNotification(extevent.TypeName(), &incedent, id)
+	err = h.bot.SendIncidentNotification(extevent.TypeName(), &incedent, id, engineerIDs)
 	if err != nil {
 		log.Println("ошибка отправки сообщения об инциденте в тг:", err)
 	}

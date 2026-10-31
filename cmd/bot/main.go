@@ -20,7 +20,7 @@ func main() {
 	}
 	defer db.Close()
 
-	bot, err := telegram.NewTelegramBot()
+	bot, err := telegram.NewTelegramBot(db)
 	if err != nil {
 		log.Fatal("не получилос ьинициализировать тг бота", err)
 	}

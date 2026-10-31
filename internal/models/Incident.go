@@ -9,5 +9,6 @@ type Incident struct {
 	Initiator   string
 	SourceIP    string
 	EventTime   *time.Time
+	AssignedTo  *int64
 	Raw         string
 }
